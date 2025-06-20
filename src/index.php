@@ -58,7 +58,7 @@ if (isset($_FILES["file"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>PHP upload Level 2</title>
+    <title>PHP upload Update</title>
 
     <!-- This is for UI only -->
     <!-- Bootstrap CSS -->
@@ -70,7 +70,7 @@ if (isset($_FILES["file"])) {
     <br />
     <br />
     <h3 class="display-4 text-center">File upload workshop</h3>
-    <h4 class="display-4 text-center">Level 2</h4>
+    <h4 class="display-4 text-center">Update</h4>
     <p class="display-5 text-center">Goal: RCE me!</p>
 
     <br />
