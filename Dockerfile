@@ -1,18 +1,22 @@
 FROM php:7.3-apache
 
-# put files
+# Set working directory
 WORKDIR /var/www/html/
-COPY ./src .
-COPY docker-php.conf /etc/apache2/conf-available/docker-php.conf
-COPY apache2.conf /var/www/html/apache2.conf
-COPY apache2.conf /etc/apache2/apache2.conf
 
-# config permission
-RUN chown -R root:www-data /var/www/html
-RUN chmod 750 /var/www/html
-RUN find . -type f -exec chmod 640 {} \;
-RUN find . -type d -exec chmod 750 {} \;
-# add write permission for upload file
-RUN chmod g+w /var/www/html/upload/
-RUN chmod +t -R /var/www/html/
+# Copy source code
+COPY ./src/ .
+
+# OPTIONAL: Copy Apache config if needed
+# COPY apache2.conf /etc/apache2/apache2.conf
+
+# Fix permission so Apache (www-data) can serve files
+RUN chown -R www-data:www-data /var/www/html
+RUN find . -type f -exec chmod 644 {} \;
+RUN find . -type d -exec chmod 755 {} \;
+
+# Make upload directory writable (if needed by PHP)
+RUN chmod 775 /var/www/html/upload/
+RUN chmod +t -R /var/www/html/upload/
+
+# DEBUG: Add a flag (if you're doing a CTF-style setup)
 RUN echo "FLAG{second_secret}" > /second_secret.txt
