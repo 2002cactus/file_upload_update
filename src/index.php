@@ -6,17 +6,14 @@ if (!isset($_SESSION['dir'])) {
     $_SESSION['dir'] = 'upload/' . session_id();
 }
 $dir = $_SESSION['dir'];
-if (!file_exists($dir)) {
-    mkdir($dir, 0755, true);
-}
+if (!file_exists($dir))
+    mkdir($dir);
 
-// Hiển thị mã nguồn nếu có ?debug
 if (isset($_GET["debug"])) die(highlight_file(__FILE__));
 
 $error = '';
 $success = '';
 
-// Xử lý upload
 if (isset($_FILES["file"])) {
     try {
         $filename = $_FILES["file"]["name"];
@@ -29,18 +26,19 @@ if (isset($_FILES["file"])) {
             throw new Exception("Hack detected! (bad extension)");
         }
 
-        // Kiểm tra MIME thực tế (magic bytes) - không giới hạn loại cụ thể
+        // Kiểm tra MIME thực tế (magic bytes)
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mime_type = $finfo->file($tmp_name);
-        if (!$mime_type || $mime_type === 'text/x-php') {
+        if (!$mime_type || $mime_type === 'text/x-php' || strpos($mime_type, 'php') !== false) {
             throw new Exception("Invalid or dangerous MIME type: $mime_type");
         }
 
-        // Đặt tên file an toàn (random hóa)
-        $safe_name = bin2hex(random_bytes(8)) . '_' . basename($filename);
-        $destination = $dir . "/" . $safe_name;
+        // Kiểm tra nếu file đã tồn tại → chặn ghi đè
+        $destination = $dir . "/" . $filename;
+        if (file_exists($destination)) {
+            throw new Exception("File already exists.");
+        }
 
-        // Di chuyển file vào thư mục
         if (!move_uploaded_file($tmp_name, $destination)) {
             throw new Exception("File upload failed");
         }
