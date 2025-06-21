@@ -18,6 +18,7 @@ if (isset($_FILES["file"])) {
     try {
         $filename = $_FILES["file"]["name"];
         $tmp_name = $_FILES["file"]["tmp_name"];
+        $lower_name = strtolower($filename);
 
         // Kiểm tra phần mở rộng bị cấm
         $blacklist_ext = ['php', 'phtml', 'phar'];
@@ -33,6 +34,11 @@ if (isset($_FILES["file"])) {
             throw new Exception("Invalid or dangerous MIME type: $mime_type");
         }
 
+        // Chống ghi đè hoặc tải lên file .htaccess
+        if ($lower_name === '.htaccess') {
+            throw new Exception("Hack detected: cannot upload .htaccess");
+        }
+        
         // Kiểm tra nếu file đã tồn tại → chặn ghi đè
         $destination = $dir . "/" . $filename;
         if (file_exists($destination)) {
